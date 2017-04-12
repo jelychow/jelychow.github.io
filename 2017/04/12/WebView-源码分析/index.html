@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="No Exception"><title>WebView 源码分析 | 一江水,几多愁,岁月催人惆</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/6.0.0/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.2/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.2/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">WebView 源码分析</h1><a id="logo" href="/.">一江水,几多愁,岁月催人惆</a><p class="description">杨柳三两只,离人对对排</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">WebView 源码分析</h1><div class="post-meta">Apr 12, 2017<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><div class="post-content"><p> 始终对webview了解比较浅显,于是乎就打开AS查看webview的源码,首先先阅读前面的注释文档,虽说文档巴拉巴拉一大堆,可是很多作用还是很有用的,在这里我整理了几个觉得比较有用的点:</p>
+<p> 1.如果要支持缩放,那么height or width 被设置成WRAP_CONTENT 都是不可以的,这样可能会带来很多预料之外的问题.</p>
+<p> 2.webview会在destroy和横屏切换时候进行重新绘制</p>
+<p> 3.如果你的HTML或者video 内容需要全屏你需要让WebChromeClient实现如下两个方法:onShowCustomView,onHideCustomView,两者有任何一个没有实现都不是不可以的.</p>
+<p> 4.在使用webview时候我们推荐使用固定的宽高,WRAP_CONTENT,可能让webview尺寸计算错误.</p>
+<p> 5.webview的API基本上都委托给一个后台的WebViewProvider类的实例来处理.其继承自AbsoluteLayout方 便向后兼容.webview的方法都委托给provider的实现类来处理.</p>
+<p> 学习完文档,接着看内部类与接口:</p>
+<p> 1.WebViewTransport:在线程之间传递webview(具体使用场景目前还未详)</p>
+<p> 2.接口FindListener用来监控搜索结果</p>
+<p> 3.VisualStateCallback 可是状态的回调</p>
+<p> 4.PictureListener 用来监控图片的改变,已过期了</p>
+<p> 5.HitTestResult 用来处理点击类型的抽象类</p>
+<p> 6.PrivateAccess 用来构造 provider 以及让provider可以调用webview父类的方法.</p>
+<p> 看完了内部类,继续看变量</p>
+<p> 1.mProvider  这是webview 服务的提供者,webview的功能基本上托管给其来实现</p>
+<p> 2.mFindListener  用来记录查找进度</p>
+<p> 了解完内部类之后开始了解些,大致的方法以及webview的使用</p>
+<p> 首先看下构造方法,webview 共计7个构造方法但是最终都会调用</p>
+<p> 最终调用的构造方法<br> 1.检查目标的sdk 版本是否高于18,</p>
+<p> 2.checkThread( ) 检查当前方法是否允许在主线程,如果不在主线程中,而且版本高于18怎么抛出   RuntimeException.(webview 所有跟界面有关的方法都需要调用checkThread)这个方法</p>
+<p> 3.创建webview的服务提供者.</p>
+<p> 4.服务webview服务提供者进行初始化工作.</p>
+<p> 5.开启缓存服务</p>
+<p> 这样以来webview就创建完毕了,然而学习webview的源码同时里面大多是类似这样的结构</p>
+<p> webview方法示例<br> 可以看出来webview方法都已经托管给mProvider来实现,下面就分析一下mProvider这个神秘东西的来历吧.</p>
+<p> 首先查看mProvider的出处,</p>
+<p> 首先通过静态工厂获得实例.<br> 然后我继续看WebViewFactoryProvider 这个类,此类是服务提供者的工厂类,但是是个接口.</p>
+<p> 其中的createWebView方法返回一个WebViewProvider,这个类的介绍上说明:这个类是webview的主要入口,和实现,webview的代理类经常初始化相关类,后台服务必须实现这个类.然而WebViewProvider也是一个接口,Sdk中无法查看的到WebViewProvider的实现类.</p>
+<p> 于是我们回来看getFactory这个方法,</p>
+<p> 返回服务提供者工厂类.<br> 这个方法返回的是一个接口,然而接口并不能实例化,那么我们看一下WebViewFactory.getProvider();</p>
+<p> 获得服务提供者的实例的方法<br> 这段代码核心的代码就是ClassproviderClass=getProviderClass();</p>
+<p> getProviderClass这个方法通过反射获取WebViewProvider,实现类,然后通过实现类来生成provider的实现类,通过跟踪代码可以看到WebViewFactoryProvider的实现类是”com.android.webview.chromium.WebViewChromiumFactoryProvider”;然而WebViewChromiumFactoryProvider这个类Sdk看不到,我打开Sdk文件在source文件中,/Users/zhouzheng/Library/Android/sdk/sources/android-22/com/android/webview/chromium这个目录下找到了WebViewChromiumFactoryProvider这个类,然后我们看一下实现方法.</p>
+<p> 实现类<br> 在里面我们可以看到WebViewChromium 这个类,点进去我们发现</p>
+<p> 服务提供者的实现类<br> 由此可以看出最终的服务提供者是chromium.webview 是一个服务,主要作用是负责处理HTML文件及URL,整个流程使用了静态工厂的方法,提供一个provider为webview提供,webview,并不需要知道如何实现这些方法. 服务提供者 这种模式极大的分离了实现.</p>
+<p> 由于工厂和提供者都是面向接口编程,那么我们只需要做不同的工厂实现,便可以产生出不同提供者,这种方式为版本兼容提供了很多便利性.</p>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://yoursite.com/2017/04/12/WebView-源码分析/" data-id="cj1edbtnp0000241cygr06sf8" class="article-share-link">分享到</a><div class="tags"><a href="/tags/webview-源码分析/">webview 源码分析</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://yoursite.com"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/webview-源码分析/" style="font-size: 15px;">webview 源码分析</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2017/04/12/WebView-源码分析/">WebView 源码分析</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.bhaltair.top/cnode/" title="其大大的主页" target="_blank">其大大的主页</a><ul></ul><a href="http://www.ifeng.com/" title="新闻" target="_blank">新闻</a><ul></ul><a href="http://www.baidu.com/" title="搜索" target="_blank">搜索</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">一江水,几多愁,岁月催人惆.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/3.0.47/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/fancybox/3.0.47/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
