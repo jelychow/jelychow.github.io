@@ -7,73 +7,7 @@ author_profile: true
 
 {% include base_path %}
 
-<div class="page__inner-wrap">
-  <header>
-    <p class="page__lead">我的技术作品和系列文章展示了我在 Android 开发和 AI 技术领域的专业探索和实践。</p>
-  </header>
 
-  <div class="archive">
-    <div class="portfolio-list">
-    {% for post in site.portfolio %}
-      {% include archive-single.html type="list" %}
-    {% endfor %}
-    </div>
-  </div>
-</div>
-
-<style>
-.page__inner-wrap {
-  margin-bottom: 2em;
-}
-.page__lead {
-  font-size: 1.1em;
-  color: #555;
-  margin-bottom: 1.5em;
-}
-.portfolio-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  text-align: left;
-}
-.portfolio-list .archive-item {
-  margin-bottom: 2em;
-  padding-bottom: 1em;
-  border-bottom: 1px solid #e0e0e0;
-  text-align: left;
-}
-.portfolio-list .archive__item-title {
-  font-size: 1.2em;
-  margin-bottom: 0.5em;
-  text-align: left;
-}
-.portfolio-list .archive__item-excerpt {
-  color: #666;
-  margin-bottom: 0.5em;
-  text-align: left;
-}
-.portfolio-list .archive__item-teaser {
-  max-width: 250px;
-  margin-right: 1em;
-  float: left;
-}
-.portfolio-list .archive__item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-}
-.portfolio-list h2 {
-  text-align: left;
-  width: 100%;
-}
-@media (max-width: 600px) {
-  .portfolio-list .archive__item-teaser {
-    max-width: 100%;
-    float: none;
-    margin-bottom: 1em;
-  }
-}
-</style>
+{% for post in site.portfolio %}
+{% include archive-single.html %}
+{% endfor %}
