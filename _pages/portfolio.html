@@ -36,24 +36,38 @@ author_profile: true
   width: 100%;
   max-width: 800px;
   margin: 0 auto;
+  text-align: left;
 }
 .portfolio-list .archive-item {
   margin-bottom: 2em;
   padding-bottom: 1em;
   border-bottom: 1px solid #e0e0e0;
+  text-align: left;
 }
 .portfolio-list .archive__item-title {
   font-size: 1.2em;
   margin-bottom: 0.5em;
+  text-align: left;
 }
 .portfolio-list .archive__item-excerpt {
   color: #666;
   margin-bottom: 0.5em;
+  text-align: left;
 }
 .portfolio-list .archive__item-teaser {
   max-width: 250px;
   margin-right: 1em;
   float: left;
+}
+.portfolio-list .archive__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+.portfolio-list h2 {
+  text-align: left;
+  width: 100%;
 }
 @media (max-width: 600px) {
   .portfolio-list .archive__item-teaser {

@@ -9,7 +9,7 @@
 # Basic Site Settings
 locale                   : "zh-CN"
 site_theme               : "default"
-title                    : "软件开发 / Android"
+title                    : "Software developer / Android"
 title_separator          : "-"
 name                     : &name "CaptainZ"
 description              : &description "love coding"
