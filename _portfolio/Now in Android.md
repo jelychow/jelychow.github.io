@@ -11,12 +11,12 @@ collection: portfolio
 
 ### 系列文章目录
 
-1. [Why Compose - 为什么选择 Jetpack Compose](/posts/2024-12-29-Now-In-Android-精讲-1-Why-Compose/)
-2. [模块化与依赖注入 - 应用架构解耦](/posts/2025-01-08-Now-In-Android-精讲-2-模块化与依赖注入/)
-3. [Kotlin 类型系统 - 深入理解类型特性](/posts/2025-01-13-Now-In-Android-精讲-3-眼花缭乱的-Kotlin-类型/)
-4. [Design System - 构建可复用 UI 组件](/posts/2025-01-14-Now-In-Android-精讲-4-Design-system/)
-5. [Data Layer - 数据层架构设计](/posts/2025-01-20-Now-In-Android-精讲-5-Data-Layer/)
-6. [UI Layer - 用户界面层最佳实践](/posts/2025-01-31-Now-In-Android-精讲-6-UI-Layer/)
+1. [Why Compose - 为什么选择 Jetpack Compose](/Now-In-Android-精讲-1-Why-Compose/)
+2. [模块化与依赖注入 - 应用架构解耦](/Now-In-Android-精讲-2-模块化与依赖注入/)
+3. [Kotlin 类型系统 - 深入理解类型特性](/Now-In-Android-精讲-3-眼花缭乱的-Kotlin-类型/)
+4. [Design System - 构建可复用 UI 组件](/Now-In-Android-精讲-4-Design-system/)
+5. [Data Layer - 数据层架构设计](/Now-In-Android-精讲-5-Data-Layer/)
+6. [UI Layer - 用户界面层最佳实践](/Now-In-Android-精讲-6-UI-Layer/)
 
 ### 技术亮点
 - 深入源码级别的技术解析
