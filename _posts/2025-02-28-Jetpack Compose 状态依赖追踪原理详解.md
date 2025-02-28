@@ -1,7 +1,10 @@
 ---
 theme: smartblue
+excerpt: "深入解析 Jetpack Compose 的状态管理机制，揭秘其背后的依赖追踪和重组系统。通过源码级别的解读，带你理解 Compose 如何实现高效的 UI 更新和状态同步。"
 ---
 # Jetpack Compose 状态依赖追踪原理详解
+
+<!--more-->
 
 ## 核心机制概述
 

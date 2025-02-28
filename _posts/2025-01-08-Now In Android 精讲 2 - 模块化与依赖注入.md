@@ -1,5 +1,6 @@
 ---
-theme: fancy
+theme: smartblue
+excerpt: "深入解析Android应用架构的核心技术！详细讲解模块化设计和依赖注入，帮你构建更加解耦、可测试和可维护的Android应用。"
 ---
 在讲解之前，先推荐大家**一定一定一定**要看一下官方对于架构的总结，然后回来阅读本文，当然也可以不回来 🥲。
 1. [Android 官方: **模块化简介**](https://developer.android.com/topic/modularization?hl=zh-cn)

@@ -1,6 +1,7 @@
 ---
 highlight: a11y-light
 theme: smartblue
+excerpt: "深入剖析Android应用的数据层架构！学习如何使用Kotlin协程、Room数据库和Retrofit构建高效、可靠的数据处理系统。"
 ---
 
 ## 准备工作
@@ -99,6 +100,7 @@ internal class OfflineFirstUserDataRepository @Inject constructor(
 ### 离线优先模块设计 overview
 
 ![image.png](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/5ef9a8828ce54aaaa2161afdd79fd802~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAgQ2FwdGFpblo=:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMzU0NDQ4MTIxNzM4MzkxMSJ9&rk3s=f64ab15b&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1741343432&x-orig-sign=I9KRbCEkMkU6cJEYKjSJE%2BVeKLY%3D)
+
 对于我们大多数人其实都会有体验，很多国内的 App 即便是在没有网络的情况下依然可以工作。例如微信断网的情况下我们依然能够查看聊天记录，头条的新闻没有网络依旧可以阅读几条。对于没有网络或是网络较差的支持我们称之为 **离线优先**。\
 对于离线优先最重要的是设计是需要有一个能够在没有网络的情况下提供支持的 Repository。从离线优先这个名字我们也可以想到，我们的数据层的 Repository 肯定以 local 数据源变化为主，然后在收到网络数据变化的时候与本地数据进行同步操作。
 

@@ -1,6 +1,7 @@
 ---
 theme: fancy
 highlight: a11y-light
+excerpt: "Kotlin类型系统深度解析！从基本类型到高级泛型，全面揭秘Kotlin强大且灵活的类型特性，帮你写出更安全、更优雅的代码。"
 ---
 ## 前言
 在开始阅读之前有一个问题想问问大家是否都了然于胸。请问 interface，fun interface，sealed interface，sealed class，enum，object，data object他们之间有什么联系，每个类型有什么特定的使用场景呢？  

@@ -1,6 +1,7 @@
 ---
 theme: fancy
 highlight: arduino-light
+excerpt: "深入解析Android应用的设计系统！探讨如何使用Material Design和Jetpack Compose创建一致、美观且高度可复用的UI组件库。"
 ---
 
 ## 准备工作
