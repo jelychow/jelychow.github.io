@@ -7,9 +7,9 @@
 # server process.
 
 # Basic Site Settings
-locale                   : "en-US"
+locale                   : "zh-ZH"
 site_theme               : "default"
-title                    : "None / Soft Ware Engineer"
+title                    : "软件开发 / Android"
 title_separator          : "-"
 name                     : &name "CaptainZ"
 description              : &description "love coding"
@@ -23,11 +23,11 @@ repository               : "jelychow/jelychow.github.io"
 author:
   # Biographic information
   avatar           : "profile.png"
-  name             : "Your Sidebar Name"
+  name             : "CaptainZ"
   pronouns         : # example: "she/her"  
-  bio              : "Short biography for the left-hand sidebar"
-  location         : "Earth"
-  employer         : "Red Brick University"
+  bio              : "日积跬步，终至千里"
+  location         : "江苏"
+  employer         : "南京林业大学"
   uri              : # URL
   email            : "jelychow@gmail.com"
 
