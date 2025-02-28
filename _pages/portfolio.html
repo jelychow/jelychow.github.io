@@ -13,7 +13,7 @@ author_profile: true
   </header>
 
   <div class="archive">
-    <div class="grid__wrapper">
+    <div class="grid__wrapper grid--left">
     {% for post in site.portfolio %}
       {% include archive-single.html type="grid" %}
     {% endfor %}
@@ -30,7 +30,31 @@ author_profile: true
   color: #555;
   margin-bottom: 1.5em;
 }
-.grid__wrapper {
-  clear: both;
+.grid--left {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.grid--left .grid__item {
+  flex: 0 0 calc(33.333% - 1em);
+  margin: 0.5em;
+  text-align: left;
+}
+.grid__item .archive__item-title {
+  margin-top: 0.5em;
+}
+.grid__item .archive__item-excerpt {
+  text-align: left;
+}
+@media (max-width: 768px) {
+  .grid--left .grid__item {
+    flex: 0 0 calc(50% - 1em);
+  }
+}
+@media (max-width: 480px) {
+  .grid--left .grid__item {
+    flex: 0 0 100%;
+  }
 }
 </style>
