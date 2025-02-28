@@ -7,7 +7,7 @@
 # server process.
 
 # Basic Site Settings
-locale                   : "zh-ZH"
+locale                   : "zh-CN"
 site_theme               : "default"
 title                    : "软件开发 / Android"
 title_separator          : "-"
