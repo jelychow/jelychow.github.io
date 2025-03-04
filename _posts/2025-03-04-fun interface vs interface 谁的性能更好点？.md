@@ -39,7 +39,7 @@ fun main() {
 ```
 
 ### 反编译
-```kt
+```java
 private static final Printer huaweiPrinter = new Printer() {
    public void print(String text) {
       String var2 = "Xiaomi Printer is printing " + text;
@@ -126,3 +126,5 @@ private static final void main$lambda$2(String it) {
 #### 4. **简化的实现**
 
 -   **减少样板代码**：使用 `fun interface`，你可以直接用 Lambda 表达式来实现接口，而不需要写一个完整的实现类。这不仅提高了代码的可读性，还减少了编译和运行时的开销。
+### fun interface 的正确打开方式
+在实际使用中优先使用 lambda 的方式来使用 fun interface，这样才能充分利用编译器的优化操作。当然这世界上没有万能药，开发过程还是要根据实际情况灵活调整，才能写出优美的代码。
