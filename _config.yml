@@ -83,7 +83,7 @@ talkyard:
   url: "https://your-talkyard-instance-url.com"
 talkmap_link             : false      #change to true to add link to talkmap on talks page
 comments:
-  provider               : "disqus"# false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
+  provider               : "staticman"# false (default), "disqus", "discourse", "facebook", "google-plus", "staticman", "custom"
   disqus:
     shortname            : "captainz"
   discourse:
