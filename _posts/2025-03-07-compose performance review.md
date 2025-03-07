@@ -1,6 +1,6 @@
 ---
 theme: smartblue
-excerpt: "compose 性能分析"
+excerpt: "顺蔓摸瓜逐步分析 compose 重组要点"
 ---
 # compose performance review
 
