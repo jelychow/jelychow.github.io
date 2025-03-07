@@ -2,6 +2,8 @@
 theme: smartblue
 excerpt: "compose 性能分析"
 ---
+# compose performance review
+
 ## Compose 性能提升的关键？
 相信很多初学者在刚刚接触 Compose 的时候多少都有点迷糊，总是把握不到重点。经常听到重组，却不知道重点在哪儿。今天我们尝试从一个点出发，由点及面的分析如何才能编写高性能的 compose ui?  
 关键词：**重组**，没错影响 compose 性能最大的就是重组，所有 compose 的性能优化都从重组开始分析，我们的所有着力点都应该从**重组**开始。
