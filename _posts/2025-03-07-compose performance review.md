@@ -1,36 +1,48 @@
 ---
 theme: smartblue
-excerpt: "顺蔓摸瓜逐步分析 compose 重组要点"
+excerpt: "逐步分析 Compose 重组要点，提升性能"
 ---
-# compose performance review
+# Compose Performance Review
 
-## Compose 性能提升的关键？
-相信很多初学者在刚刚接触 Compose 的时候多少都有点迷糊，总是把握不到重点。经常听到重组，却不知道重点在哪儿。今天我们尝试从一个点出发，由点及面的分析如何才能编写高性能的 compose ui?  
-关键词：**重组**，没错影响 compose 性能最大的就是重组，所有 compose 的性能优化都从重组开始分析，我们的所有着力点都应该从**重组**开始。
+## Compose 性能提升的关键
+
+很多初学者在刚接触 Compose 时可能会感到迷惑，不知道重组的重点在哪里。今天我们尝试从一个点出发，逐步分析如何编写高性能的 Compose UI。
+
+关键词：**重组**。影响 Compose 性能最大的就是重组，所有的性能优化都应从重组开始分析。
 
 ### 为什么会重组？
-我们尽量先把一个复杂的问题简单化，然后逐步分析，然后网络化记忆这些知识点。
-1. state 变化导致重组
-2. compose fun 的 inputs 发生了变化
 
-当然上面 2 点写的非常简单，没关系，我们顺藤摸瓜一步步分析其中道理。
+我们先把复杂的问题简单化，然后逐步分析，再网络化记忆这些知识点。
 
-## 如何降低 state 变化导致的重组
-### state 变化导致重组的原理
+1. 状态（state）变化导致重组
+2. 可组合函数（composable function）的输入发生变化
+
+上面两点写得很简单，没关系，我们一步步分析其中的道理。
+
+## 如何降低状态变化导致的重组
+
+### 状态变化导致重组的原理
+
 具体原理见这篇[文章](https://jelychow.github.io/Jetpack-Compose-%E7%8A%B6%E6%80%81%E4%BE%9D%E8%B5%96%E8%BF%BD%E8%B8%AA%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3/)
-### 如何减少 state 变化导致的重组？
-#### 最容易想到的方式降低 state 变化的频率。
-那么如何降低 state 的变化的频率呢？
-1. 使用 compose 的  `derivedStateOf` 来限制，降低 state 变化的频率，以达到减少无效重组的目的
-2. 使用 kotlin flow 的 `distinctUntilChanged` 来降低重复数据流
-#### 减少 state 读取的范围
-使用 defer read 的方式来降低 state 影响的范围。所谓 defer read 就是通过把 state 传入 lambda 里面，然后传递给使用的地方，然后来减少重组。在这里你可能会有个疑问，为什么放到 lambda 里面可以降低重组？这里现按下不表，后面我们会就此展开讨论。
 
-## 如何 降低 inputs 变化导致的重组？
-这里我们先看下一段代码，
+### 如何减少状态变化导致的重组？
 
-```kt
+#### 降低状态变化的频率
 
+如何降低状态变化的频率呢？
+
+1. 使用 Compose 的 `derivedStateOf` 来限制、降低状态变化的频率，以减少无效重组。
+2. 使用 Kotlin Flow 的 `distinctUntilChanged` 来降低重复数据流。
+
+#### 减少状态读取的范围
+
+使用 defer read 的方式来降低状态影响的范围。所谓 defer read 就是通过将状态传入 lambda，然后传递给使用的地方，从而减少重组。为什么放到 lambda 里面可以降低重组？我们后面会详细讨论。
+
+## 如何降低输入变化导致的重组？
+
+先看一段代码：
+
+```kotlin
 @Composable
 fun CustomText(
     text: String,
@@ -48,7 +60,7 @@ fun CustomText(
 }
 ```
 
-```Java
+```java
 public static final void CustomText(@NotNull String text, @Nullable Modifier modifier, @Nullable Composer $composer, int $changed, int var4) {
    Intrinsics.checkNotNullParameter(text, "text");
    $composer = $composer.startRestartGroup(-837456306);
@@ -70,23 +82,29 @@ public static final void CustomText(@NotNull String text, @Nullable Modifier mod
       $composer.skipToGroupEnd();
    } else {
 ```
-通过编译后的代码，我们可以看到 compose 方法在进入重组的时候，会有一个标志字段 `$dirty` 通过位运算 **与** 来计算当前代码是否可以跳过。代码里面有两处 `$composer.changed(text)，$composer.changed(modifier)`， 通过 composer 调用 changed 方法来判断入参是否改变。
-那么这个 changed 方法便成了判断入参是否变化的核心了。changed 方法源码在[这里](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/Composer.kt;drc=7b3f9a0bf941ce7d0ec219f2337cf0c944501f0b;bpv=1;bpt=1;l=2028)可见，感兴趣的可以看下，不看也无所谓的（🤣），方法逻辑比较清晰， changed 方法有几个重要规则，在这里列出来一下
+
+通过编译后的代码，我们可以看到 Compose 方法在进入重组时，会有一个标志字段 `$dirty` 通过位运算 **与** 来计算当前代码是否可以跳过。代码中有两处 `$composer.changed(text)` 和 `$composer.changed(modifier)`，通过 composer 调用 changed 方法来判断入参是否改变。
+
+changed 方法源码在[这里](https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:compose/runtime/runtime/src/commonMain/kotlin/androidx/compose/runtime/Composer.kt;drc=7b3f9a0bf941ce7d0ec219f2337cf0c944501f0b;bpv=1;bpt=1;l=2028)可见，感兴趣的可以看下。方法逻辑比较清晰，changed 方法有几个重要规则：
+
 1. 对基本类型（Int, String 等）使用值相等比较
 2. 对非稳定类型（如普通 class）使用引用相等比较
-3. 对声明为 @Stable 的类或 data class 会启用结构相等比较
+3. 对声明为 `@Stable` 的类或 data class 会启用结构相等比较
 
-了解了规则之后，那么我们后面的所有优化都会有一个方向。对于基本类型 compose 的编译器并没有做优化是直接使用 equality，对于 @Stable 注解的类也会直接使用等值比较，对于这种使用 equal 来比较 class 我们称之为稳定类型。那么除了 @stable @immutable 注解的类型， compose 里面有多少稳定类型？
--   所有基元值类型：`Boolean`、`Int`、`Long`、`Float`、`Char` 等。
--   字符串
--   所有函数类型 (lambda)
+了解了规则后，我们的优化方向就明确了。对于基本类型，Compose 的编译器直接使用 equality，对于 `@Stable` 注解的类也会直接使用等值比较。除了 `@Stable` 和 `@Immutable` 注解的类型，Compose 里面有多少稳定类型？
 
-当然 lambda 在没有开启强跳模式情况下，对于返回值不是 Unit 的类型，还是会被判断成不稳定类型，其实也很好理解，因为返回值可能会改变，然后导致重组。  
-了解了上面 `稳定性` 规则之后，我们尝试来用上述的规则来指导我们日常的开发，首先就是我们尽量使用 kotlin 的不可变类型作为入参，这样可以减少重组次数。
+- 所有基元值类型：`Boolean`、`Int`、`Long`、`Float`、`Char` 等。
+- 字符串
+- 所有函数类型（lambda）
 
-## remember 系列减少重组的负载压力
-在降低了重组次数之后，还有没有其他方式能够降低重组的压力呢，compose 里面提供一个特别的操作使用 `remember ` 来减少重组过程的计算，避免多次无用的计算。
+当然 lambda 在没有开启强跳模式情况下，对于返回值不是 Unit 的类型，还是会被判断成不稳定类型，因为返回值可能会改变，从而导致重组。
 
-## 总结一下
+了解了上面的稳定性规则后，我们可以在日常开发中尽量使用 Kotlin 的不可变类型作为入参，以减少重组次数。
 
-回忆一下本篇的内容，所有关于 compose 的性能优化的地方我们都是从重组开始分析的。一个是降低重组频率，重组频率里面我们从 state 和 stability 两个方面分析，然后进行优化，第二个是使用 compose 里面的 remember 进行cache，减少多次重复计算的压力。
+## 使用 remember 系列减少重组的负载压力
+
+在降低了重组次数后，还有没有其他方式能够降低重组的压力呢？Compose 提供了一个特别的操作——使用 `remember` 来减少重组过程的计算，避免多次无用的计算。
+
+## 总结
+
+回顾一下本篇内容，所有关于 Compose 的性能优化都是从重组开始分析的。一个是降低重组频率，重组频率从 state 和 stability 两个方面分析并进行优化；另一个是使用 Compose 里面的 `remember` 进行缓存，减少多次重复计算的压力。
