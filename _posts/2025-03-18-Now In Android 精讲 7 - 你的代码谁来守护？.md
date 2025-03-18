@@ -1,8 +1,8 @@
 ---
 theme: fancy
-excerpt: "excerpt: "Learn how the Now In Android project ensures code quality through CI workflows, dependency management, and automated testing."
-
+excerpt: "Learn how the Now In Android project ensures code quality through CI workflows, dependency management, and automated testing."
 ---
+
 ## 前言
 
 相信我们经常写代码的同学都会有这样的感觉，团队协作、代码提交、检查变得越来越重要。在某些团队里面，code review 甚至会花出相当大比例的时间与精力来保证代码质量。本文来学习借鉴一下 [now in android](https://github.com/android/nowinandroid) 项目是如何保证稳定性。
