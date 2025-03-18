@@ -1,6 +1,6 @@
 ---
 theme: fancy
-excerpt: "excerpt: "Learn how the Now In Android project ensures code quality through CI workflows, dependency management, and automated testing.""
+excerpt: "excerpt: "Learn how the Now In Android project ensures code quality through CI workflows, dependency management, and automated testing."
 
 ---
 ## 前言
