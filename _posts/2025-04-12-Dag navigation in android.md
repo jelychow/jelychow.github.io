@@ -1,6 +1,6 @@
 ---
 theme: awesome-green
-excerpt: "excerpt: "Dag navigation in android""
+excerpt: "excerpt: Dag navigation in android"
 
 ---
 ### 使用 DAG （有向无环图）管理复杂依赖
