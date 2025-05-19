@@ -1,7 +1,12 @@
 ---
+title: "Android Questions: ViewModel内存泄漏问题解析"
+collection: publications
+category: manuscripts
+permalink: /publication/2025-05-19-android-questions
+excerpt: "深入分析Android ViewModel持有Context导致的内存泄漏问题及解决方案"
+date: 2025-05-19
+venue: 'Android开发技术'
 theme: awesome-green
-excerpt: "excerpt: Android questions"
-
 ---
 
 # 为什么ViewModel持有Context会导致内存泄漏

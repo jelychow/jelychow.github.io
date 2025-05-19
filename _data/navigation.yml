@@ -11,6 +11,9 @@ main:
   - title: "博客文章"
     url: /year-archive/
     
+  - title: "发表作品"
+    url: /publications/
+    
   - title: "简历"
     url: /cv/
     
