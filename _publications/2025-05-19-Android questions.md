@@ -33,7 +33,7 @@ Activity Context包含对整个视图层次结构的引用，这意味着ViewMod
 - 布局对象
 - 适配器和数据集
 
-随着配置变更次数增加，泄漏的Activity实例会累积，最终可能导致OOM崩溃。
+随着配置变更次数增加，泄漏的 Activity 实例会累积，最终可能导致OOM崩溃。
 
 ## 解决方案
 
@@ -49,40 +49,9 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 }
 ```
 
-### 2. 使用弱引用
+### 2. 使用依赖注入管理生命周期
 
-```kotlin
-class MyViewModel : ViewModel() {
-    private var weakContext: WeakReference<Context>? = null
-    
-    fun setContext(context: Context) {
-        weakContext = WeakReference(context)
-    }
-    
-    fun doSomething() {
-        weakContext?.get()?.let { context ->
-            // 使用context，但要注意检查null
-        }
-    }
-}
-```
-
-### 3. 使用LiveData传递事件
-
-```kotlin
-class MyViewModel : ViewModel() {
-    private val _navigationEvent = MutableLiveData<Event<String>>()
-    val navigationEvent: LiveData<Event<String>> = _navigationEvent
-    
-    fun navigateToDetails() {
-        _navigationEvent.value = Event("detail_screen")
-    }
-}
-```
-
-### 4. 使用依赖注入管理生命周期
-
-通过Hilt或Dagger等框架配合lifecycle-aware components管理依赖，避免手动持有Context。
+通过 Hilt 或 Koin 等框架配合 lifecycle-aware components 管理依赖，避免手动持有 Context。
 
 ## 最佳实践
 
@@ -95,7 +64,7 @@ class MyViewModel : ViewModel() {
 
 ## 为什么以来注入可以避免内存泄漏？
 举例 例如 koin:  
-总是使用 androidContext() 提供应用级 Context
-正确设置组件作用域，避免长生命周期持有短生命周期组件
-使用 by viewModel() 而非手动创建 ViewModel 实例
-注意关闭自定义作用域 scope.close()
+- 总是使用 androidContext() 提供应用级 Context
+- 正确设置组件作用域，避免长生命周期持有短生命周期组件
+- 使用 by viewModel() 而非手动创建 ViewModel 实例
+- 注意关闭自定义作用域 scope.close()
