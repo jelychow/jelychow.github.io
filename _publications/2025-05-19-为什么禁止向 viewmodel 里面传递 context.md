@@ -1,5 +1,5 @@
 ---
-title: "Android Questions: ViewModel内存泄漏问题解析"
+title: "ViewModel内存泄漏问题解析"
 collection: publications
 category: manuscripts
 permalink: /publication/2025-05-19-android-questions
@@ -8,8 +8,6 @@ date: 2025-05-19
 venue: 'Android开发技术'
 theme: awesome-green
 ---
-
-# 为什么ViewModel持有Context会导致内存泄漏
 
 ViewModel持有Context会导致内存泄漏主要是因为**生命周期不匹配**的问题。这种情况非常常见，但却容易被忽视。
 
@@ -62,7 +60,7 @@ class MyViewModel(application: Application) : AndroidViewModel(application) {
 
 遵循这些原则可以有效避免因ViewModel持有Context导致的内存泄漏问题。
 
-## 为什么以来注入可以避免内存泄漏？
+## 为什么依赖注入可以避免内存泄漏？
 举例 例如 koin:  
 - 总是使用 androidContext() 提供应用级 Context
 - 正确设置组件作用域，避免长生命周期持有短生命周期组件
