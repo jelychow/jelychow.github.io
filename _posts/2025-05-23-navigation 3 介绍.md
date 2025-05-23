@@ -18,7 +18,7 @@ excerpt: "Navigation 3 介绍"
 
 ### 简单使用方式
 
-```
+```kt
 val backStack = remember { mutableStateListOf<Any>(RouteA) }
 
 NavDisplay(
@@ -49,7 +49,7 @@ NavDisplay(
 ```
 只需要定义一个 mutableStateListOf 作为回退栈即可，或者更简单
 
-```
+```kt
     val backStack = rememberNavBackStack(RouteA)
 
     NavDisplay(
@@ -75,7 +75,7 @@ NavDisplay(
 
 ### 自定义的使用方式
 
-```
+```kt
 class TopLevelBackStack<T: Any>(startKey: T) {
 
     // Maintain a stack for each top level route
@@ -172,9 +172,7 @@ public fun <T : Any> NavDisplay(
 
 ### 工作原理:
 
-```
-kotlin
-CopyInsert
+```kotlin
 val backStack = rememberNavBackStack(ConversationList)
 val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>()
 
@@ -205,9 +203,7 @@ NavDisplay(
 
 1.  **实现示例**:
 
-```
-kotlin
-CopyInsert
+```kotlin
 entry<ConversationList>(
     metadata = ListDetailSceneStrategy.listPane(
         detailPlaceholder = {
@@ -225,7 +221,7 @@ entry<ConversationList>(
 
 ## 2. 自定义双窗格布局 (TwoPaneActivity)
 
-这是一个展示如何创建自定义自适应布局的实现，使用 Scenes API 和自定义的 `TwoPaneScene` 和 `TwoPaneSceneStrategy`。
+这是一个展示如何创建自定义自适应布局的实现，使用 Scenes API 和自定义的`TwoPaneScene`和`TwoPaneSceneStrategy`。
 
 ### 核心组件:
 
@@ -234,9 +230,7 @@ entry<ConversationList>(
 
 ### 工作原理:
 
-```
-kotlin
-CopyInsert
+```kotlin
 val backStack = rememberNavBackStack(Home)
 val twoPaneStrategy = remember { TwoPaneSceneStrategy<Any>() }
 
@@ -254,9 +248,7 @@ NavDisplay(
 
 1.  **自定义布局逻辑**:
 
-    ```
-    kotlin
-    CopyInsert
+    ``` kotlin
     Row(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.weight(0.5f)) {
             firstEntry.content.invoke(firstEntry.key)
@@ -274,9 +266,7 @@ NavDisplay(
 
 3.  **窗口大小检测**:
 
-    ```
-    kotlin
-    CopyInsert
+    ```kotlin
     val windowSizeClass = currentWindowAdaptiveInfo().windowSizeClass
     if (!windowSizeClass.isWidthAtLeastBreakpoint(WIDTH_DP_MEDIUM_LOWER_BOUND)) {
         return null
@@ -285,9 +275,7 @@ NavDisplay(
 
 4.  **元数据标记**:
 
-    ```
-    kotlin
-    CopyInsert
+    ``` kotlin
     entry<Home>(metadata = TwoPaneScene.twoPane()) { ... }
     ```
 
@@ -300,8 +288,8 @@ NavDisplay(
 
 2.  **场景策略模式**:
 
-    -   使用 `SceneStrategy` 接口来决定何时和如何显示特定布局
-    -   通过 `calculateScene` 方法根据条件返回适当的场景
+    -   使用`SceneStrategy`接口来决定何时和如何显示特定布局
+    -   通过`calculateScene`方法根据条件返回适当的场景
 
 3.  **元数据驱动**:
 
@@ -309,7 +297,4 @@ NavDisplay(
     -   允许每个目的地指定自己的显示方式
 
 ## 总结
-本文中介绍 navigation 3 的一些用法
-
-
-
+本文中介绍 navigation 3 的一些用法，当然 navigation 3 目前还不是很稳定，希望感兴趣的可以尝试一下
