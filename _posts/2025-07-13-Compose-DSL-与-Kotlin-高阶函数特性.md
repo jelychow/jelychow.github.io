@@ -1,5 +1,5 @@
 ---
-theme: fancy
+theme: minimal-mistakes-jekyll
 excerpt: '深入探讨 Compose DSL 与 Kotlin 高阶函数如何协同工作，打造现代化声明式 UI。从实战角度剖析核心机制、设计模式与最佳实践，帮你掌握这套强大的开发范式。'
 tags:
   - Jetpack Compose
@@ -72,8 +72,6 @@ fun Greeting(name: String) {
 1. 添加隐式参数（比如 `Composer` 对象）
 2. 插入跟踪代码，用于检测状态变化和触发重组
 3. 生成唯一标识，用于在组合树中定位
-
-我曾经尝试手动实现类似的功能，结果发现没有编译器插件的支持，这简直是不可能完成的任务。
 
 ### 作用域控制：上下文感知的 API
 
