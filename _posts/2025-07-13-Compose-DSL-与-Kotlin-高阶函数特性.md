@@ -1,5 +1,5 @@
 ---
-theme: minimal-mistakes-jekyll
+theme: fancy
 excerpt: '深入探讨 Compose DSL 与 Kotlin 高阶函数如何协同工作，打造现代化声明式 UI。从实战角度剖析核心机制、设计模式与最佳实践，帮你掌握这套强大的开发范式。'
 tags:
   - Jetpack Compose
