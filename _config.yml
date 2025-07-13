@@ -8,8 +8,7 @@
 
 # Basic Site Settings
 locale                   : "zh-CN"
-#site_theme               : "default"
-site_theme               : minimal-mistakes-jekyll
+site_theme               : "default"
 title                    : "Software developer / Android"
 title_separator          : "-"
 name                     : &name "CaptainZ"
