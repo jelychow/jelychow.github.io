@@ -39,20 +39,43 @@ val multiply = calculate(5, 3) { x, y -> x * y }  // 结果为 15
 如果说高阶函数是基石，那带接收者的函数就是 Compose DSL 的核心魔法了：
 
 ```kotlin
-// 这才是真正的魔法
-val htmlBuilder: StringBuilder.() -> Unit = {
-    append("<html>")
-    append("<body>")
-    append("Hello World")
-    append("</body>")
-    append("</html>")
+// 定义一个简单的 UI 构建器
+class UIBuilder {
+    fun text(content: String) {
+        println("添加文本: $content")
+    }
+    
+    fun button(text: String, onClick: () -> Unit) {
+        println("添加按钮: $text")
+    }
+    
+    fun image(url: String) {
+        println("添加图片: $url")
+    }
 }
 
-// 看看使用起来多自然
-val html = StringBuilder().apply(htmlBuilder).toString()
+// 这才是真正的魔法 - 带接收者的函数类型
+fun buildUI(content: UIBuilder.() -> Unit) {
+    println("开始构建UI")
+    val builder = UIBuilder()
+    builder.content()  // 在 builder 上下文中执行 content 函数
+    println("UI构建完成")
+}
+
+// 看看使用起来多自然 - 就像是在描述UI结构
+buildUI {
+    text("欢迎使用我的应用")
+    image("header.png")
+    button("点击登录") {
+        // 处理点击事件
+        println("用户点击了登录按钮")
+    }
+}
 ```
 
-第一次接触这个特性时，我简直惊呆了！这种写法让代码读起来像是在描述一个结构，而不是一堆函数调用。这不正是 UI 构建需要的吗？
+这个例子是不是更容易理解了？`buildUI` 函数接收一个带接收者的函数 `UIBuilder.() -> Unit`，这使得在调用时，lambda 表达式内部的 `this` 指向 `UIBuilder` 实例，所以可以直接调用 `text()`、`image()` 和 `button()` 方法，就好像这些方法是在当前作用域中定义的一样。
+
+这正是 Compose 的核心设计理念 - 通过带接收者的函数创造出一种声明式的 UI 构建方式，让代码读起来就像是在描述 UI 结构，而不是一堆函数调用。
 
 ## Compose DSL：魔法背后的秘密
 
