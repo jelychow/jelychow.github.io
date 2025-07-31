@@ -1,0 +1,204 @@
+/* ==========================================================================
+   Custom Syntax highlighting - Modern IDE-like style
+   ========================================================================== */
+
+/* Code block container styling */
+div.highlighter-rouge, 
+figure.highlight {
+  position: relative;
+  margin-bottom: 1.5em;
+  padding: 1em;
+  border: 1px solid #444;
+  border-radius: 8px;
+  background-color: #2b2b2b;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  font-size: 0.9em;
+
+  &:before {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    padding: 2px 10px;
+    background-color: #4a4a4a;
+    color: white;
+    content: attr(data-lang);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .highlight {
+    margin: 0;
+    font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.85em;
+    line-height: 1.5;
+  }
+}
+
+/* Remove underlines in code */
+code {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+/* Inline code styling */
+p code, li code, td code {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.85em;
+  color: #e83e8c;
+  border: 1px solid #eaeaea;
+}
+
+/* Table styling for code */
+.highlight table {
+  margin-bottom: 0;
+  font-size: 1em;
+  border: 0;
+
+  td {
+    padding: 5px;
+    border: 0;
+    
+    /* Line numbers column */
+    &.gutter {
+      padding-right: 1em;
+      width: 1em;
+      color: #808080;
+      border-right: 1px solid #464646;
+      text-align: right;
+    }
+    
+    /* Code column */
+    &.code {
+      padding-left: 1em;
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+  }
+}
+
+/* Modern dark theme syntax highlighting - IntelliJ-inspired */
+.highlight {
+  color: #a9b7c6;
+  background-color: #2b2b2b;
+  
+  .c, .cm, .c1, .cs { color: #808080; font-style: italic; } /* Comment */
+  .err { color: #bc3f3c; } /* Error */
+  .k, .kc, .kd, .kp, .kr { color: #cc7832; font-weight: bold; } /* Keyword */
+  .o, .ow { color: #a9b7c6; } /* Operator */
+  .p { color: #a9b7c6; } /* Punctuation */
+  .n { color: #a9b7c6; } /* Name */
+  .na { color: #ffc66d; } /* Name.Attribute */
+  .nb { color: #cc7832; } /* Name.Builtin */
+  .nc { color: #ffc66d; } /* Name.Class */
+  .no { color: #9876aa; } /* Name.Constant */
+  .nd { color: #bbb529; } /* Name.Decorator */
+  .ni { color: #a9b7c6; } /* Name.Entity */
+  .ne { color: #ffc66d; } /* Name.Exception */
+  .nf { color: #ffc66d; } /* Name.Function */
+  .nl { color: #a9b7c6; } /* Name.Label */
+  .nn { color: #a9b7c6; } /* Name.Namespace */
+  .nt { color: #cc7832; } /* Name.Tag */
+  .nv { color: #9876aa; } /* Name.Variable */
+  .nx { color: #a9b7c6; } /* Name.Other */
+  
+  .s, .sb, .sc, .sd, .s2, .se, .sh, .si, .sx, .sr, .s1, .ss { color: #6a8759; } /* String */
+  .m, .mf, .mh, .mi, .mo, .il { color: #6897bb; } /* Number */
+  
+  .gd { color: #cc7832; background-color: #451e1e; } /* Generic.Deleted */
+  .gi { color: #6a8759; background-color: #294436; } /* Generic.Inserted */
+  
+  /* Specific Kotlin highlights */
+  .kt { color: #cc7832; } /* Kotlin Type */
+  .annotation, .meta { color: #bbb529; } /* Annotation */
+}
+
+/* Language-specific tweaks */
+.language-kotlin {
+  .kd { color: #cc7832; font-weight: bold; } /* Keywords like fun, val, var */
+  .kt { color: #cc7832; } /* Types */
+  .nf { color: #ffc66d; } /* Function names */
+  .nc { color: #a9b7c6; } /* Class names */
+  .nn { color: #a9b7c6; } /* Package names */
+  .s { color: #6a8759; } /* Strings */
+  .c1 { color: #808080; font-style: italic; } /* Comments */
+  .o { color: #a9b7c6; } /* Operators */
+}
+
+/* Add language labels to code blocks */
+div.language-kotlin:before {
+  content: "Kotlin";
+}
+
+div.language-java:before {
+  content: "Java";
+}
+
+div.language-swift:before {
+  content: "Swift";
+}
+
+div.language-javascript:before, div.language-js:before {
+  content: "JavaScript";
+}
+
+div.language-typescript:before, div.language-ts:before {
+  content: "TypeScript";
+}
+
+div.language-python:before, div.language-py:before {
+  content: "Python";
+}
+
+div.language-ruby:before, div.language-rb:before {
+  content: "Ruby";
+}
+
+div.language-html:before {
+  content: "HTML";
+}
+
+div.language-css:before {
+  content: "CSS";
+}
+
+div.language-scss:before {
+  content: "SCSS";
+}
+
+div.language-bash:before, div.language-sh:before {
+  content: "Shell";
+}
+
+div.language-sql:before {
+  content: "SQL";
+}
+
+div.language-xml:before {
+  content: "XML";
+}
+
+div.language-json:before {
+  content: "JSON";
+}
+
+div.language-yaml:before, div.language-yml:before {
+  content: "YAML";
+}
+
+div.language-markdown:before, div.language-md:before {
+  content: "Markdown";
+}
+
+div.language-plaintext:before {
+  content: "Text";
+}
