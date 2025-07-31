@@ -9,10 +9,11 @@ tags:
   - Best Practices
 ---
 
-<span lang="en">English</span>
-<span lang="zh">中文文本</span>
+<div class="language-selector">
+  <span class="lang-link active">中文</span> | 
+  <a href="/posts/encapsulating_experimental_apis/en/" class="lang-link">English</a>
+</div>
 
-::: zh
 # 使用工厂模式和接口封装实验性API的好处
 
 最近在一个多平台项目中，我遇到了一个让人头疼的问题：项目中大量使用了标记为"实验性"的API，导致代码库中充斥着各种 `@OptIn` 注解。每次升级依赖库，总会有几个API变动，需要修改大量代码。这种情况下，我开始思考如何更优雅地处理这些实验性API，最终通过工厂模式和接口封装找到了解决方案。今天就来分享一下这个实践经验。
@@ -106,10 +107,8 @@ class DefaultTimeProvider : TimeProvider {
     override fun formatDateTime(timestamp: Long): String {
         val instant = Instant.fromEpochMilliseconds(timestamp)
         val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.year}-${localDateTime.monthNumber.toString().padStart(2, '0')}-" +
-            "${localDateTime.dayOfMonth.toString().padStart(2, '0')} " +
-            "${localDateTime.hour.toString().padStart(2, '0')}:" +
-            localDateTime.minute.toString().padStart(2, '0')
+        return "${localDateTime.year}-${localDateTime.monthNumber.toString().padStart(2, '0')}-${localDateTime.dayOfMonth.toString().padStart(2, '0')} " +
+                "${localDateTime.hour.toString().padStart(2, '0')}:${localDateTime.minute.toString().padStart(2, '0')}"
     }
 
     override fun formatDate(timestamp: Long): String {
@@ -123,166 +122,73 @@ class DefaultTimeProvider : TimeProvider {
     }
 
     override fun isExpired(timestamp: Long, bufferMillis: Long): Boolean {
-        val currentTimeMillis = getCurrentTimeMillis()
-        return currentTimeMillis >= (timestamp - bufferMillis)
+        return Clock.System.now().toEpochMilliseconds() > (timestamp - bufferMillis)
     }
 }
 ```
 
-注意这个类的特点：
-- `@OptIn`注解只出现在文件顶部一次
-- 所有实验性API的使用都被限制在这个类中
-- 对外暴露的都是稳定的接口方法
+注意，所有实验性API的使用都被限制在这个单一的文件中，`@OptIn`注解只需要在文件级别添加一次。
 
-#### 3. 工厂：提供统一访问点
+#### 3. 工厂：提供接口实例
 
 最后，创建一个工厂类来管理实例：
 
 ```kotlin
+
 /**
  * 时间提供者工厂
  * 用于获取TimeProvider实例
  */
 object TimeProviderFactory {
-    private var instance: TimeProvider? = null
+    // 默认实例，可以在测试中替换
+    private var instance: TimeProvider = DefaultTimeProvider()
 
     /**
      * 获取TimeProvider实例
-     * 如果实例不存在，创建一个新的DefaultTimeProvider实例
      */
     fun getInstance(): TimeProvider {
-        if (instance == null) {
-            instance = DefaultTimeProvider()
-        }
-        return instance!!
+        return instance
     }
 
     /**
-     * 设置TimeProvider实例
-     * 用于测试或自定义实现
+     * 设置自定义TimeProvider实例
+     * 主要用于测试
      */
-    fun setInstance(timeProvider: TimeProvider) {
-        instance = timeProvider
+    fun setInstance(customInstance: TimeProvider) {
+        instance = customInstance
     }
 }
 ```
 
-工厂模式在这里提供了几个好处：
-- 单例管理，避免重复创建实例
-- 提供替换实现的能力，特别是在测试时
-- 为所有客户端代码提供统一的访问点
+### 在代码中使用这种模式
 
-### 实际使用体验
-
-这套模式在我们的项目中应用后，带来了明显的改善。下面是一些实际的使用场景：
-
-#### 在ViewModel中使用
+现在，我们可以在代码中使用工厂来获取TimeProvider实例，而不是直接使用实验性API：
 
 ```kotlin
-class InterviewViewModel(
+class UserViewModel(
+    private val repository: UserRepository,
+    // 依赖可以注入，也可以从工厂获取
     private val timeProvider: TimeProvider = TimeProviderFactory.getInstance()
-) {
-    fun formatInterviewTime(timestamp: Long): String {
+) : ViewModel() {
+    
+    fun formatLastLoginTime(timestamp: Long): String {
         return timeProvider.formatDateTime(timestamp)
     }
     
-    fun isInterviewExpired(expiresAt: Long): Boolean {
-        return timeProvider.isExpired(expiresAt)
+    fun checkSessionExpired(sessionExpiryTime: Long): Boolean {
+        // 这里不需要任何实验性API注解！
+        return timeProvider.isExpired(sessionExpiryTime)
     }
 }
 ```
 
-看，ViewModel中完全没有实验性API的痕迹，代码干净整洁。
+业务代码现在变得干净，不需要任何实验性API注解。
 
-#### 令牌刷新服务
+### 测试变得简单
 
-```kotlin
-class KtorTokenRefreshService(
-    private val httpClient: HttpClient,
-    private val timeProvider: TimeProvider = TimeProviderFactory.getInstance(),
-) : TokenRefreshService {
-    override suspend fun refreshToken(refreshToken: String?): Token {
-        // 使用httpClient获取新token
-        val authResult = httpClient.post("auth/refresh") {
-            setBody(mapOf("refresh_token" to refreshToken))
-        }.body<AuthResponse>()
-        
-        // 计算过期时间
-        val currentTimeMillis = timeProvider.getCurrentTimeMillis()
-        val expirationTimeMillis = currentTimeMillis + (authResult.data!!.expiresAt * 1000L)
-
-        return Token(
-            accessToken = authResult.data.accessToken,
-            refreshToken = authResult.data.refreshToken,
-            expiresAt = expirationTimeMillis,
-        )
-    }
-}
-```
-
-在这个服务中，我们使用`timeProvider`来处理时间相关的逻辑，而不直接依赖实验性API。
-
-#### 在UI层使用
+这种模式的一个最大好处是简化了测试。我们可以轻松创建一个模拟实现：
 
 ```kotlin
-// 在Compose组件中
-@Composable
-private fun EventTimeDisplay(timestamp: Long) {
-    val timeProvider = remember { TimeProviderFactory.getInstance() }
-    
-    Text(
-        text = try {
-            timeProvider.formatDate(timestamp)
-        } catch (e: Exception) {
-            "未知日期"
-        },
-        style = MaterialTheme.typography.bodyMedium
-    )
-}
-```
-
-UI层也是如此，干净利落地使用`timeProvider`，没有实验性API的痕迹。
-
-### 测试变得超级简单
-
-这种封装方式的一个巨大好处是测试变得异常简单。看看这个例子：
-
-```kotlin
-class TokenServiceTest {
-    private val mockTimeProvider = MockTimeProvider()
-    private lateinit var tokenService: TokenRefreshService
-    
-    @Before
-    fun setup() {
-        // 替换默认实现为测试用的mock
-        TimeProviderFactory.setInstance(mockTimeProvider)
-        tokenService = TokenRefreshService(mockHttpClient)
-    }
-    
-    @Test
-    fun `token should be expired after expiration time`() {
-        // 设置当前时间
-        mockTimeProvider.currentTimeMillis = 1625097600000L // 2021-07-01 00:00:00
-        
-        // 创建一个1小时后过期的token
-        val token = Token(
-            accessToken = "test",
-            refreshToken = "test",
-            expiresAt = mockTimeProvider.currentTimeMillis + 3600000
-        )
-        
-        // 验证token未过期
-        assertFalse(tokenService.isTokenExpired(token))
-        
-        // 前进时间1小时零1分钟
-        mockTimeProvider.currentTimeMillis += 3660000
-        
-        // 验证token已过期
-        assertTrue(tokenService.isTokenExpired(token))
-    }
-}
-
-// 测试用的Mock实现
 class MockTimeProvider : TimeProvider {
     var currentTimeMillis = 0L
     
@@ -313,321 +219,47 @@ class MockTimeProvider : TimeProvider {
 这种模式不仅适用于时间相关API，也适用于任何标记为实验性或不稳定的API。如果你的项目中也面临类似的问题，不妨试试这种方法，相信会有不错的效果。
 
 你有没有遇到过类似的问题？或者有其他处理实验性API的方法？欢迎在评论区分享你的经验！
-:::
 
-::: en
-# Encapsulating Experimental APIs with Factory Pattern and Interfaces
-
-Recently, I ran into a frustrating problem in a multiplatform project: our codebase was littered with `@OptIn` annotations due to heavy use of experimental APIs. Every dependency upgrade meant changing code in dozens of places. After some headaches, I found a cleaner solution using the Factory Pattern and interfaces to encapsulate these experimental APIs. Let me share this approach that saved our project from annotation hell.
-
-### The Problem with Experimental APIs
-
-Before diving into the solution, let's talk about why experimental APIs are problematic in the first place. Taking Kotlin's `kotlinx-datetime` library as an example:
-
-1. **Annotation Pollution**: Code filled with `@OptIn(ExperimentalTime::class)` annotations everywhere
-2. **Compiler Warnings**: Forget an annotation? Get ready for warnings or errors
-3. **API Instability**: Experimental APIs can change between versions, breaking your code
-4. **Tight Coupling**: Business logic directly depends on unstable APIs
-5. **Testing Headaches**: Code using experimental APIs directly is often harder to test
-
-These issues might seem minor in small projects, but they compound quickly in larger codebases. In our multiplatform project, this became a significant pain point that we couldn't ignore anymore.
-
-### The Core Idea: Isolation
-
-The key insight is to "isolate change." We need to contain potentially changing experimental APIs in one place, rather than spreading them throughout the codebase. The approach is:
-
-1. Define stable interfaces that express what we actually need
-2. Use experimental APIs in a single implementation class
-3. Provide interface instances through a factory pattern
-
-This way, when experimental APIs change, we only need to modify the implementation class without touching business code.
-
-### Real-World Example: Encapsulating Time APIs
-
-Here's the actual implementation I used in our project to encapsulate `kotlinx-datetime` experimental APIs:
-
-#### 1. The Interface
-
-First, we define a clean interface that only includes what we really need:
-
-```kotlin
-/**
- * Time provider interface
- * Encapsulates time-related operations to avoid direct use of experimental time APIs
- */
-interface TimeProvider {
-    /**
-     * Get current time in milliseconds
-     */
-    fun getCurrentTimeMillis(): Long
-
-    /**
-     * Format timestamp to date-time string
-     * Format: yyyy-MM-dd HH:mm
-     */
-    fun formatDateTime(timestamp: Long): String
-
-    /**
-     * Format timestamp to date string
-     * Format: yyyy年MM月dd日
-     */
-    fun formatDate(timestamp: Long): String
-
-    /**
-     * Get current system default timezone ID
-     */
-    fun getCurrentTimeZoneId(): String
-
-    /**
-     * Check if a timestamp is expired
-     * @param timestamp Expiration timestamp (milliseconds)
-     * @param bufferMillis Buffer time (milliseconds), default is 5000 milliseconds
-     */
-    fun isExpired(timestamp: Long, bufferMillis: Long = 5000): Boolean
-}
-```
-
-Notice how this interface is completely clean - no experimental API details exposed, just focusing on our business needs.
-
-#### 2. The Implementation: Where All Experimental APIs Live
-
-Next, create an implementation class where all experimental API usage is contained:
-
-```kotlin
-@file:OptIn(ExperimentalTime::class)
-/**
- * Default implementation of TimeProvider
- * Uses kotlinx-datetime library to implement time-related functions
- */
-class DefaultTimeProvider : TimeProvider {
-
-    override fun getCurrentTimeMillis(): Long {
-        return Clock.System.now().toEpochMilliseconds()
-    }
-
-    override fun formatDateTime(timestamp: Long): String {
-        val instant = Instant.fromEpochMilliseconds(timestamp)
-        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.year}-${localDateTime.monthNumber.toString().padStart(2, '0')}-" +
-            "${localDateTime.dayOfMonth.toString().padStart(2, '0')} " +
-            "${localDateTime.hour.toString().padStart(2, '0')}:" +
-            localDateTime.minute.toString().padStart(2, '0')
-    }
-
-    override fun formatDate(timestamp: Long): String {
-        val instant = Instant.fromEpochMilliseconds(timestamp)
-        val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return "${localDateTime.year}年${localDateTime.monthNumber}月${localDateTime.dayOfMonth}日"
-    }
-
-    override fun getCurrentTimeZoneId(): String {
-        return TimeZone.currentSystemDefault().id
-    }
-
-    override fun isExpired(timestamp: Long, bufferMillis: Long): Boolean {
-        val currentTimeMillis = getCurrentTimeMillis()
-        return currentTimeMillis >= (timestamp - bufferMillis)
-    }
-}
-```
-
-Note the key characteristics:
-- The `@OptIn` annotation appears only once at the file level
-- All experimental API usage is contained in this single class
-- Only stable interface methods are exposed to the outside world
-
-#### 3. The Factory: Providing a Unified Access Point
-
-Finally, create a factory to manage instances:
-
-```kotlin
-
-/**
- * Time provider factory
- * Used to get TimeProvider instances
- */
-object TimeProviderFactory {
-    private var instance: TimeProvider? = null
-
-    /**
-     * Get TimeProvider instance
-     * If instance doesn't exist, creates a new DefaultTimeProvider instance
-     */
-    fun getInstance(): TimeProvider {
-        if (instance == null) {
-            instance = DefaultTimeProvider()
-        }
-        return instance!!
-    }
-
-    /**
-     * Set TimeProvider instance
-     * Used for testing or custom implementations
-     */
-    fun setInstance(timeProvider: TimeProvider) {
-        instance = timeProvider
-    }
-}
-```
-
-The factory pattern provides several benefits here:
-- Singleton management to avoid creating multiple instances
-- Ability to swap implementations, especially for testing
-- A unified access point for all client code
-
-### Real Usage Experience
-
-After applying this pattern in our project, we saw significant improvements. Here are some real-world usage examples:
-
-#### In ViewModels
-
-```kotlin
-class InterviewViewModel(
-    private val timeProvider: TimeProvider = TimeProviderFactory.getInstance()
-) {
-    fun formatInterviewTime(timestamp: Long): String {
-        return timeProvider.formatDateTime(timestamp)
-    }
-    
-    fun isInterviewExpired(expiresAt: Long): Boolean {
-        return timeProvider.isExpired(expiresAt)
-    }
-}
-```
-
-See how clean the ViewModel is? No trace of experimental APIs anywhere.
-
-#### Token Refresh Service
-
-```kotlin
-class KtorTokenRefreshService(
-    private val httpClient: HttpClient,
-    private val timeProvider: TimeProvider = TimeProviderFactory.getInstance(),
-) : TokenRefreshService {
-    override suspend fun refreshToken(refreshToken: String?): Token {
-        // Get new token using httpClient
-        val authResult = httpClient.post("auth/refresh") {
-            setBody(mapOf("refresh_token" to refreshToken))
-        }.body<AuthResponse>()
-        
-        // Calculate expiration time
-        val currentTimeMillis = timeProvider.getCurrentTimeMillis()
-        val expirationTimeMillis = currentTimeMillis + (authResult.data!!.expiresAt * 1000L)
-
-        return Token(
-            accessToken = authResult.data.accessToken,
-            refreshToken = authResult.data.refreshToken,
-            expiresAt = expirationTimeMillis,
-        )
-    }
-}
-```
-
-In this service, we use `timeProvider` for time-related logic instead of directly depending on experimental APIs.
-
-#### In UI Components
-
-```kotlin
-// In a Composable function
-@Composable
-private fun EventTimeDisplay(timestamp: Long) {
-    val timeProvider = remember { TimeProviderFactory.getInstance() }
-    
-    Text(
-        text = try {
-            timeProvider.formatDate(timestamp)
-        } catch (e: Exception) {
-            "Unknown Date"
-        },
-        style = MaterialTheme.typography.bodyMedium
-    )
-}
-```
-
-The UI layer is equally clean, using `timeProvider` without any experimental API traces.
-
-### Testing Becomes a Breeze
-
-One huge benefit of this approach is how much easier testing becomes. Check out this example:
-
-```kotlin
-class TokenServiceTest {
-    private val mockTimeProvider = MockTimeProvider()
-    private lateinit var tokenService: TokenRefreshService
-    
-    @Before
-    fun setup() {
-        // Replace default implementation with test mock
-        TimeProviderFactory.setInstance(mockTimeProvider)
-        tokenService = TokenRefreshService(mockHttpClient)
-    }
-    
-    @Test
-    fun `token should be expired after expiration time`() {
-        // Set current time
-        mockTimeProvider.currentTimeMillis = 1625097600000L // 2021-07-01 00:00:00
-        
-        // Create token that expires in 1 hour
-        val token = Token(
-            accessToken = "test",
-            refreshToken = "test",
-            expiresAt = mockTimeProvider.currentTimeMillis + 3600000
-        )
-        
-        // Verify token is not expired
-        assertFalse(tokenService.isTokenExpired(token))
-        
-        // Advance time by 1 hour and 1 minute
-        mockTimeProvider.currentTimeMillis += 3660000
-        
-        // Verify token is now expired
-        assertTrue(tokenService.isTokenExpired(token))
-    }
+<style>
+.language-selector {
+  margin-bottom: 20px;
+  font-weight: bold;
 }
 
-// Mock implementation for testing
-class MockTimeProvider : TimeProvider {
-    var currentTimeMillis = 0L
-    
-    override fun getCurrentTimeMillis(): Long = currentTimeMillis
-    
-    // Simple implementations of other methods...
+.lang-link {
+  text-decoration: none;
+  color: #0366d6;
 }
-```
 
-Through the factory's `setInstance` method, we can easily swap implementations, gaining complete control over time for testing purposes.
+.lang-link.active {
+  color: #24292e;
+  pointer-events: none;
+}
 
-### The Upgrade Surprise
+/* 代码块样式 */
+.language-kotlin {
+  background-color: #f6f8fa;
+  border-radius: 6px;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 85%;
+  line-height: 1.45;
+  overflow: auto;
+  padding: 16px;
+}
 
-The value of this pattern became most evident when upgrading dependencies. I remember when we upgraded `kotlinx-datetime` from 0.2.1 to 0.3.0, which had some API changes. Previously, this would have meant modifying code scattered throughout the codebase; now, we only needed to update the `DefaultTimeProvider` class, leaving all other code untouched.
+.language-kotlin .keyword {
+  color: #d73a49;
+}
 
-The entire upgrade process went from "nightmare" to "piece of cake" - that feeling was priceless!
+.language-kotlin .string {
+  color: #032f62;
+}
 
-### Conclusion: A Best Practice Worth Spreading
+.language-kotlin .comment {
+  color: #6a737d;
+}
 
-Based on real project experience, I believe this pattern of encapsulating experimental APIs is worth adopting in more projects:
-
-1. **Isolate Change**: Contain unstable APIs in a single implementation class
-2. **Stable Interfaces**: Provide stable interfaces for business code
-3. **Testing Friendly**: Easy to swap implementations for testing
-4. **Smooth Upgrades**: Only need to modify the implementation class when dependencies change
-5. **Clean Code**: No experimental API traces in business code
-
-This pattern isn't just for time-related APIs - it works for any API marked as experimental or unstable. If you're facing similar issues in your project, give this approach a try. I think you'll be pleasantly surprised by the results.
-
-Have you encountered similar problems? Or do you have other approaches to handling experimental APIs? I'd love to hear your experiences in the comments!
-:::
-
-<script>
-// JavaScript code to switch languages dynamically
-document.addEventListener('DOMContentLoaded', function() {
-    const elements = document.querySelectorAll('span[lang]');
-    elements.forEach(element => {
-        if (element.lang === 'en') {
-            element.style.display = 'none'; // Hide English text initially or based on condition
-        } else if (element.lang === 'zh') {
-            element.style.display = 'block'; // Show Chinese text initially or based on condition
-        }
-    });
-});
-</script>
+.language-kotlin .function {
+  color: #6f42c1;
+}
+</style>
