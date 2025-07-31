@@ -1,41 +1,37 @@
 /* ==========================================================================
-   Custom Syntax highlighting - Clean minimal style
+   Code Reset - Selective styling for code elements
    ========================================================================== */
 
-/* Global override to remove underlines from ALL code elements */
+/* Reset all code elements */
 code, pre, .highlight, .highlighter-rouge, figure.highlight, div.highlighter-rouge,
-.highlight code, .highlighter-rouge code, pre code, code span, .highlight span {
-  text-decoration: none !important;
-  border-bottom: none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-/* Target specific theme elements that might add underlines */
+.highlight code, .highlighter-rouge code, pre code, code span, .highlight span,
 a code, p code, li code, td code, h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
   text-decoration: none !important;
   border-bottom: none !important;
   border: none !important;
   box-shadow: none !important;
-  padding: 0 0.2em;
+  border-radius: 0 !important;
 }
 
-/* Override any theme-specific styling */
-*:not(pre) > code {
-  text-decoration: none !important;
-  border-bottom: none !important;
-  border: none !important;
-  box-shadow: none !important;
+/* Remove background from inline code */
+a code, p code, li code, td code, h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {
+  background: initial !important;
+  background-color: initial !important;
 }
 
-/* Ensure no underlines in code blocks */
+/* Add background to code blocks */
+div.highlighter-rouge, 
+figure.highlight,
 .highlight {
-  * {
-    text-decoration: none !important;
-    border-bottom: none !important;
-    border: none !important;
-    box-shadow: none !important;
-  }
+  background-color: #f6f8fa !important;
+}
+
+/* Basic styling for code */
+code {
+  font-family: 'Consolas', 'Liberation Mono', Menlo, monospace;
+  font-size: .75em;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
 }
 
 /* Code block container styling */
@@ -45,8 +41,9 @@ figure.highlight {
   margin-bottom: 1.5em;
   padding: 0.5em;
   border: none;
-  border-radius: 6px;
-  background-color: #f6f8fa;
+  border-radius: 0;
+  background: none !important;
+  background-color: transparent !important;
   box-shadow: none;
   font-size: 1.0em;
 
@@ -70,18 +67,14 @@ figure.highlight {
     font-family: 'Consolas', 'Liberation Mono', Menlo, monospace;
     font-size: 1.0em;
     line-height: 1.5;
+    background: none !important;
+    background-color: transparent !important;
   }
 }
 
 /* Inline code styling */
 p code, li code, td code {
-  background-color: #f6f8fa;
-  border-radius: 3px;
   padding: 2px 5px;
-  font-family: 'Consolas', 'Liberation Mono', Menlo, monospace;
-  font-size: 1.0em;
-  color: #24292e;
-  border: none;
 }
 
 /* Table styling for code */
@@ -93,16 +86,15 @@ p code, li code, td code {
   td {
     padding: 5px;
     border: 0;
-
+    
     /* Line numbers column */
     &.gutter {
       padding-right: 1em;
       width: 1em;
       color: #999;
-      border-right: none;
       text-align: right;
     }
-
+    
     /* Code column */
     &.code {
       padding-left: 1em;
@@ -112,7 +104,6 @@ p code, li code, td code {
   pre {
     margin: 0;
     padding: 0;
-    background-color: transparent;
     border: 0;
   }
 }
@@ -120,10 +111,9 @@ p code, li code, td code {
 /* Light theme syntax highlighting - GitHub-inspired */
 .highlight {
   color: #24292e;
-  background-color: #f6f8fa;
   
   .c, .cm, .c1, .cs { color: #6a737d; } /* Comment */
-  .err { color: #b31d28; background-color: transparent; } /* Error */
+  .err { color: #b31d28; } /* Error */
   .k, .kc, .kd, .kp, .kr { color: #d73a49; } /* Keyword */
   .o, .ow { color: #24292e; } /* Operator */
   .p { color: #24292e; } /* Punctuation */
@@ -145,12 +135,8 @@ p code, li code, td code {
   .s, .sb, .sc, .sd, .s2, .se, .sh, .si, .sx, .sr, .s1, .ss { color: #032f62; } /* String */
   .m, .mf, .mh, .mi, .mo, .il { color: #005cc5; } /* Number */
   
-  .gd { color: #b31d28; background-color: transparent; } /* Generic.Deleted */
-  .gi { color: #22863a; background-color: transparent; } /* Generic.Inserted */
-  
-  /* Specific Kotlin highlights */
-  .kt { color: #d73a49; } /* Kotlin Type */
-  .annotation, .meta { color: #e36209; } /* Annotation */
+  .gd { color: #b31d28; } /* Generic.Deleted */
+  .gi { color: #22863a; } /* Generic.Inserted */
 }
 
 /* Language-specific tweaks */
@@ -163,73 +149,4 @@ p code, li code, td code {
   .s { color: #032f62; } /* Strings */
   .c1 { color: #6a737d; } /* Comments */
   .o { color: #24292e; } /* Operators */
-}
-
-/* Add language labels to code blocks */
-div.language-kotlin:before {
-  content: "kotlin";
-}
-
-div.language-java:before {
-  content: "java";
-}
-
-div.language-swift:before {
-  content: "swift";
-}
-
-div.language-javascript:before, div.language-js:before {
-  content: "javascript";
-}
-
-div.language-typescript:before, div.language-ts:before {
-  content: "typescript";
-}
-
-div.language-python:before, div.language-py:before {
-  content: "python";
-}
-
-div.language-ruby:before, div.language-rb:before {
-  content: "ruby";
-}
-
-div.language-html:before {
-  content: "html";
-}
-
-div.language-css:before {
-  content: "css";
-}
-
-div.language-scss:before {
-  content: "scss";
-}
-
-div.language-bash:before, div.language-sh:before {
-  content: "shell";
-}
-
-div.language-sql:before {
-  content: "sql";
-}
-
-div.language-xml:before {
-  content: "xml";
-}
-
-div.language-json:before {
-  content: "json";
-}
-
-div.language-yaml:before, div.language-yml:before {
-  content: "yaml";
-}
-
-div.language-markdown:before, div.language-md:before {
-  content: "markdown";
-}
-
-div.language-plaintext:before {
-  content: "text";
 }
