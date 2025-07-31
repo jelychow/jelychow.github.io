@@ -14,7 +14,7 @@ tags:
   <button id="lang-en" class="lang-btn active" onclick="switchLanguage('en')">English</button>
 </div>
 
-<div id="content-zh" class="lang-content active">
+<div id="content-zh" class="lang-content">
 # 使用工厂模式和接口封装实验性API的好处
 
 最近在一个多平台项目中，我遇到了一个让人头疼的问题：项目中大量使用了标记为"实验性"的API，导致代码库中充斥着各种 `@OptIn` 注解。每次升级依赖库，总会有几个API变动，需要修改大量代码。这种情况下，我开始思考如何更优雅地处理这些实验性API，最终通过工厂模式和接口封装找到了解决方案。今天就来分享一下这个实践经验。
@@ -324,12 +324,12 @@ class MockTimeProvider : TimeProvider {
 4. **升级平滑**：依赖升级时只需修改实现类
 5. **代码整洁**：业务代码中没有实验性API的痕迹
 
-这种模式不仅适用于时间相关API，也适用于任何标记为实验性或不稳定的API。如果你的项目中也面临类似问题，不妨试试这种方法，相信会有不错的效果。
+这种模式不仅适用于时间相关API，也适用于任何标记为实验性或不稳定的API。如果你的项目中也面临类似的问题，不妨试试这种方法，相信会有不错的效果。
 
 你有没有遇到过类似的问题？或者有其他处理实验性API的方法？欢迎在评论区分享你的经验！
 </div>
 
-<div id="content-en" class="lang-content">
+<div id="content-en" class="lang-content active">
 # Encapsulating Experimental APIs with Factory Pattern and Interfaces
 
 Recently, I ran into a frustrating problem in a multiplatform project: our codebase was littered with `@OptIn` annotations due to heavy use of experimental APIs. Every dependency upgrade meant changing code in dozens of places. After some headaches, I found a cleaner solution using the Factory Pattern and interfaces to encapsulate these experimental APIs. Let me share this approach that saved our project from annotation hell.
@@ -703,9 +703,9 @@ function switchLanguage(lang) {
   localStorage.setItem('preferred_language', lang);
 }
 
-// Set initial language based on stored preference or default to Chinese
+// Set initial language based on stored preference or default to English
 document.addEventListener('DOMContentLoaded', function() {
-  const preferredLanguage = localStorage.getItem('preferred_language') || 'zh';
+  const preferredLanguage = localStorage.getItem('preferred_language') || 'en';
   switchLanguage(preferredLanguage);
 });
 </script>
