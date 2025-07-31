@@ -683,7 +683,7 @@ function switchLanguage(lang) {
   });
   
   // Show selected language content
-  const selectedContent = document.getElementById(`content-${lang}`);
+  const selectedContent = document.getElementById('content-' + lang);
   if (selectedContent) {
     selectedContent.classList.add('active');
   }
@@ -694,7 +694,7 @@ function switchLanguage(lang) {
     button.classList.remove('active');
   });
   
-  const selectedButton = document.getElementById(`lang-${lang}`);
+  const selectedButton = document.getElementById('lang-' + lang);
   if (selectedButton) {
     selectedButton.classList.add('active');
   }
