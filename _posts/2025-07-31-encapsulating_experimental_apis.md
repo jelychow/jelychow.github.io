@@ -50,8 +50,6 @@ tags:
 首先，我们需要定义一个清晰的接口，只包含我们真正需要的功能：
 
 ```kotlin
-package com.questiontop.questions.util.time
-
 /**
  * 时间提供者接口
  * 封装时间相关操作，避免直接使用实验性的时间API
@@ -96,14 +94,6 @@ interface TimeProvider {
 
 ```kotlin
 @file:OptIn(ExperimentalTime::class)
-
-package com.questiontop.questions.util.time
-
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 /**
  * TimeProvider的默认实现
@@ -151,8 +141,6 @@ class DefaultTimeProvider : TimeProvider {
 最后，创建一个工厂类来管理实例：
 
 ```kotlin
-package com.questiontop.questions.util.time
-
 /**
  * 时间提供者工厂
  * 用于获取TimeProvider实例
@@ -365,8 +353,6 @@ Here's the actual implementation I used in our project to encapsulate `kotlinx-d
 First, we define a clean interface that only includes what we really need:
 
 ```kotlin
-package com.questiontop.questions.util.time
-
 /**
  * Time provider interface
  * Encapsulates time-related operations to avoid direct use of experimental time APIs
@@ -411,15 +397,6 @@ Next, create an implementation class where all experimental API usage is contain
 
 ```kotlin
 @file:OptIn(ExperimentalTime::class)
-
-package com.questiontop.questions.util.time
-
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Clock
-import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
-
 /**
  * Default implementation of TimeProvider
  * Uses kotlinx-datetime library to implement time-related functions
@@ -466,7 +443,6 @@ Note the key characteristics:
 Finally, create a factory to manage instances:
 
 ```kotlin
-package com.questiontop.questions.util.time
 
 /**
  * Time provider factory
