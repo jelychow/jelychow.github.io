@@ -237,28 +237,74 @@ Have you encountered similar problems? Or do you have other approaches to handli
 
 /* Code block styling */
 .language-kotlin {
-  background-color: #f6f8fa;
-  border-radius: 6px;
-  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: #2b2b2b;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
   font-size: 85%;
-  line-height: 1.45;
+  line-height: 1.5;
   overflow: auto;
   padding: 16px;
+  margin: 20px 0;
+  color: #a9b7c6;
+  border: 1px solid #444;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .language-kotlin .keyword {
-  color: #d73a49;
+  color: #cc7832;
+  font-weight: bold;
 }
 
 .language-kotlin .string {
-  color: #032f62;
+  color: #6a8759;
 }
 
 .language-kotlin .comment {
-  color: #6a737d;
+  color: #808080;
+  font-style: italic;
 }
 
 .language-kotlin .function {
-  color: #6f42c1;
+  color: #ffc66d;
+}
+
+.language-kotlin .annotation {
+  color: #bbb529;
+}
+
+/* Remove underlines in code */
+code {
+  text-decoration: none !important;
+  border-bottom: none !important;
+}
+
+/* Inline code styling */
+p code, li code {
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-size: 85%;
+  color: #e83e8c;
+  border: 1px solid #eaeaea;
+}
+
+/* Code block title */
+pre {
+  position: relative;
+  margin-top: 30px;
+}
+
+pre::before {
+  content: "Kotlin";
+  position: absolute;
+  top: -25px;
+  left: 0;
+  background: #4a4a4a;
+  color: white;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 4px 4px 0 0;
 }
 </style>
