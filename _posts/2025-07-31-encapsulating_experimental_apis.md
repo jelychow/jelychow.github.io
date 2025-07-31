@@ -9,12 +9,10 @@ tags:
   - Best Practices
 ---
 
-<div class="language-selector">
-  <button id="lang-zh" class="lang-btn" onclick="switchLanguage('zh')">中文</button>
-  <button id="lang-en" class="lang-btn active" onclick="switchLanguage('en')">English</button>
-</div>
+<span lang="en">English</span>
+<span lang="zh">中文文本</span>
 
-<div id="content-zh" class="lang-content">
+::: zh
 # 使用工厂模式和接口封装实验性API的好处
 
 最近在一个多平台项目中，我遇到了一个让人头疼的问题：项目中大量使用了标记为"实验性"的API，导致代码库中充斥着各种 `@OptIn` 注解。每次升级依赖库，总会有几个API变动，需要修改大量代码。这种情况下，我开始思考如何更优雅地处理这些实验性API，最终通过工厂模式和接口封装找到了解决方案。今天就来分享一下这个实践经验。
@@ -315,9 +313,9 @@ class MockTimeProvider : TimeProvider {
 这种模式不仅适用于时间相关API，也适用于任何标记为实验性或不稳定的API。如果你的项目中也面临类似的问题，不妨试试这种方法，相信会有不错的效果。
 
 你有没有遇到过类似的问题？或者有其他处理实验性API的方法？欢迎在评论区分享你的经验！
-</div>
+:::
 
-<div id="content-en" class="lang-content active">
+::: en
 # Encapsulating Experimental APIs with Factory Pattern and Interfaces
 
 Recently, I ran into a frustrating problem in a multiplatform project: our codebase was littered with `@OptIn` annotations due to heavy use of experimental APIs. Every dependency upgrade meant changing code in dozens of places. After some headaches, I found a cleaner solution using the Factory Pattern and interfaces to encapsulate these experimental APIs. Let me share this approach that saved our project from annotation hell.
@@ -618,70 +616,18 @@ Based on real project experience, I believe this pattern of encapsulating experi
 This pattern isn't just for time-related APIs - it works for any API marked as experimental or unstable. If you're facing similar issues in your project, give this approach a try. I think you'll be pleasantly surprised by the results.
 
 Have you encountered similar problems? Or do you have other approaches to handling experimental APIs? I'd love to hear your experiences in the comments!
-</div>
-
-<style>
-.language-selector {
-  display: flex;
-  margin-bottom: 20px;
-}
-
-.lang-btn {
-  padding: 8px 16px;
-  margin-right: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.lang-btn.active {
-  background-color: #4CAF50;
-  color: white;
-  border-color: #4CAF50;
-}
-
-.lang-content {
-  display: none;
-}
-
-.lang-content.active {
-  display: block;
-}
-</style>
+:::
 
 <script>
-function switchLanguage(lang) {
-  // Hide all language content
-  const contents = document.querySelectorAll('.lang-content');
-  contents.forEach(content => {
-    content.classList.remove('active');
-  });
-  
-  // Show selected language content
-  const selectedContent = document.getElementById('content-' + lang);
-  if (selectedContent) {
-    selectedContent.classList.add('active');
-  }
-  
-  // Update button styles
-  const buttons = document.querySelectorAll('.lang-btn');
-  buttons.forEach(button => {
-    button.classList.remove('active');
-  });
-  
-  const selectedButton = document.getElementById('lang-' + lang);
-  if (selectedButton) {
-    selectedButton.classList.add('active');
-  }
-  
-  // Save preference to localStorage
-  localStorage.setItem('preferred_language', lang);
-}
-
-// Set initial language based on stored preference or default to English
+// JavaScript code to switch languages dynamically
 document.addEventListener('DOMContentLoaded', function() {
-  const preferredLanguage = localStorage.getItem('preferred_language') || 'en';
-  switchLanguage(preferredLanguage);
+    const elements = document.querySelectorAll('span[lang]');
+    elements.forEach(element => {
+        if (element.lang === 'en') {
+            element.style.display = 'none'; // Hide English text initially or based on condition
+        } else if (element.lang === 'zh') {
+            element.style.display = 'block'; // Show Chinese text initially or based on condition
+        }
+    });
 });
 </script>
